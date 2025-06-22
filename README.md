@@ -28,3 +28,54 @@ It validates the incoming request and creates a new user in the database.
   "email": "john.doe@example.com",
   "password": "mypassword123"
 }
+```
+
+---
+
+# User Login Endpoint Documentation
+
+## Endpoint
+**POST** `/user/login`
+
+## Description
+This endpoint authenticates an existing user.  
+It verifies the provided email and password, and returns an authentication token if the credentials are valid.
+
+## Request Data
+
+### Body Parameters (JSON)
+- **email** (string): Required. Must be a valid email address.
+- **password** (string): Required. Minimum 6 characters.
+
+### Example Request Body
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "mypassword123"
+}
+```
+
+## Responses
+
+### Success Response
+- **Status Code:** 200 - OK  
+- **Body Example:**
+```json
+{
+  "statusCode": 200,
+  "data": {
+    "user": { 
+        /* user details */
+    },
+    "token": "generated_auth_token"
+  },
+  "message": "User logged in succesfully",
+  "success": true
+}
+```
+
+### Error Responses
+- **Status Code:** 400 - Bad Request  
+  **Description:** Email or password is missing, or user does not exist.
+- **Status Code:** 401 - Unauthorized  
+  **Description:** Invalid password or unauthorized access.

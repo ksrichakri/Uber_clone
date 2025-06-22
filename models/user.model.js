@@ -24,8 +24,7 @@ const userSchema = new Schema({
     },
     password:{
         type: String,
-        required: true,
-        select : false
+        required: true
     }
 })
 
@@ -41,7 +40,7 @@ userSchema.pre("save" , async function(next){
     next()
 })
 
-userSchema.methods.isPasswordCorrect = async function ()  {
+userSchema.methods.isPasswordCorrect = async function (password)  {
     return await bcrypt.compare(password , this.password)
 }
 

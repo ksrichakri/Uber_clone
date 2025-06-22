@@ -38,9 +38,38 @@ const registerUser = asyncHandler(async(req , res)=>{
      }
 
      const token = createdUser.generateAuthToken()
-     return res.status(201).json(new ApiResponse(200,{registerUser,token}, "User registerd succesfully"))
-
+     return res.status(201).json(new ApiResponse(200,{registerUser,token}, "User registered succesfully"))
      
 })
 
-export {registerUser}
+
+const loginUser = asyncHandler(async(req,res) =>{
+    
+    const {email , password} = req.body
+
+    if(!email || !password){
+        throw new ApiError(400 , "Email and password are required")
+    }
+    const user = await User.findOne({email}).select("+password")
+
+    if(!user){
+        throw new ApiError(400 , "User doesnt exist")
+    }
+
+    const passCheck  = await user.isPasswordCorrect(password)
+
+    if(!passCheck){
+        throw new ApiError(401 , "Invalid password")
+    }
+
+    const token = user.generateAuthToken()
+
+    return res.status(200).json(new ApiResponse(401,{user,token}, "User logged in succesfully"))
+
+
+})
+
+const logOutUser = asyncHandler(async(req,res) =>{
+
+})
+export {registerUser , loginUser , logOutUser}
