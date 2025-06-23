@@ -6,7 +6,7 @@ import { validationResult } from "express-validator";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import {asyncHandler} from "../utils/asyncHandler.js"
-
+import { BlackListToken } from "../models/blackListToken.model.js";
 
 const registerUser = asyncHandler(async(req , res)=>{
      const err = validationResult(req)
@@ -64,12 +64,23 @@ const loginUser = asyncHandler(async(req,res) =>{
 
     const token = user.generateAuthToken()
 
+    res.cookie('token',token)
+
     return res.status(200).json(new ApiResponse(401,{user,token}, "User logged in succesfully"))
 
 
 })
 
-const logOutUser = asyncHandler(async(req,res) =>{
+const getUserProfile = asyncHandler(async(req , res) =>{
+    return res.status(200).json(new ApiResponse(200, { user: req.user }))
 
 })
-export {registerUser , loginUser , logOutUser}
+const logOutUser = asyncHandler(async(req,res,next) =>{
+    res.clearCookie('token')
+    const token = req.cookies?.token || req.header.authorization.split(" ")[1];
+     await BlackListToken.create({token})
+
+     return res.status(200).json({message: "Logged Out Successfully!"})
+
+})
+export {registerUser , loginUser , logOutUser , getUserProfile}

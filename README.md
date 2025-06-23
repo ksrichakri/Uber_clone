@@ -1,3 +1,7 @@
+# API Documentation
+
+---
+
 # User Registration Endpoint Documentation
 
 ## Endpoint
@@ -30,6 +34,26 @@ It validates the incoming request and creates a new user in the database.
 }
 ```
 
+### Responses
+- **Success Response:**
+  - **Status Code:** 201 - Created  
+  - **Body Example:**
+  ```json
+  {
+    "statusCode": 200,
+    "data": {
+      "registerUser": { /* user details */ },
+      "token": "generated_auth_token"
+    },
+    "message": "User registered succesfully",
+    "success": true
+  }
+  ```
+
+- **Error Responses:**
+  - **409 - Conflict:** User with this email already exists.
+  - **400 - Bad Request:** Validation errors.
+
 ---
 
 # User Login Endpoint Documentation
@@ -55,18 +79,16 @@ It verifies the provided email and password, and returns an authentication token
 }
 ```
 
-## Responses
+### Responses
 
-### Success Response
+#### Success Response
 - **Status Code:** 200 - OK  
 - **Body Example:**
 ```json
 {
   "statusCode": 200,
   "data": {
-    "user": { 
-        /* user details */
-    },
+    "user": { /* user details */ },
     "token": "generated_auth_token"
   },
   "message": "User logged in succesfully",
@@ -74,8 +96,82 @@ It verifies the provided email and password, and returns an authentication token
 }
 ```
 
-### Error Responses
-- **Status Code:** 400 - Bad Request  
-  **Description:** Email or password is missing, or user does not exist.
-- **Status Code:** 401 - Unauthorized  
-  **Description:** Invalid password or unauthorized access.
+#### Error Responses
+- **400 - Bad Request:** Email or password is missing, or user does not exist.
+- **401 - Unauthorized:** Invalid password or unauthorized access.
+
+---
+
+# User Profile Endpoint Documentation
+
+## Endpoint
+**GET** `/user/profile`
+
+## Description
+This endpoint retrieves the profile of the authenticated user.  
+- Requires a valid authentication token passed either as a cookie or in the Authorization header.
+- The authentication middleware verifies and attaches the user object to the request.
+
+## Authentication
+- Ensure that the request contains a valid token.
+
+## Example Request
+Set the request header:
+```
+Authorization: Bearer <generated_auth_token>
+```
+Or ensure that the token is available as a cookie.
+
+### Responses
+
+#### Success Response
+- **Status Code:** 200 - OK  
+- **Body Example:**
+```json
+{
+  "statusCode": 200,
+  "data": {
+    "user": { /* authenticated user details */ }
+  },
+  "message": "",
+  "success": true
+}
+```
+
+#### Error Responses
+- **401 - Unauthorized:** If token is missing, invalid, or blacklisted.
+
+---
+
+# User Logout Endpoint Documentation
+
+## Endpoint
+**POST** `/user/logout`
+
+## Description
+This endpoint logs out an authenticated user.  
+- It clears the authentication token cookie.
+- It blacklists the token used, ensuring that it cannot be used again.
+
+## Authentication
+- A valid token must be provided via cookie or Authorization header.
+
+## Example Request
+Ensure the token is provided in the cookie or header:
+```
+Authorization: Bearer <generated_auth_token>
+```
+
+### Responses
+
+#### Success Response
+- **Status Code:** 200 - OK  
+- **Body Example:**
+```json
+{
+  "message": "Logged Out Successfully!"
+}
+```
+
+#### Error Responses
+- **401 - Unauthorized:** If token is missing, invalid, or
